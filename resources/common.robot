@@ -37,7 +37,10 @@ Login
     log to console              ${DYNAMIC_LOGIN}
     IF                          '${DYNAMIC_LOGIN}' == 'NoValuePassed'
         Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
+        log                     ${DYNAMIC_LOGIN}
+        log                     in the IF 
     ELSE
+        log                     in  the  ELSE
         GoTo                    ${sf_instance_url}
         TypeText                Username                    ${sf_username}              delay=1
         TypeSecret              Password                    ${sf_password}
