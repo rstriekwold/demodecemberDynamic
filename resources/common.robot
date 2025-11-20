@@ -123,7 +123,7 @@ DeleteLeads
 CRT Local Login
     [Arguments]                  ${mfa_secret}=${EMPTY}
     Log                         Logging in locally using robot variables
-    # SetupBrowser                ${url}                      ${browser}
+    goto                        ${loginUrl}
     TypeText                    Username                    ${username}
     TypeSecret                  Password                    ${password}
     ClickText                   Log In
