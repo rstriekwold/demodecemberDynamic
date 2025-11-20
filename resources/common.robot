@@ -3,6 +3,7 @@ Documentation                   Example resource file with custom keywords. NOTE
 ...                             minor changes to work in different instances.
 Library                         QForce
 Library                         String
+Library                         DateTime
 
 
 *** Variables ***
@@ -14,7 +15,7 @@ ${home_url}                     ${login_url}/lightning/page/home
 
 
 *** Keywords ***
-Setup Browserdwdsd
+Setup Browser
     # Setting search order is not really needed here, but given as an example
     # if you need to use multiple libraries containing keywords with duplicate names
     Set Library Search Order    QForce                      QWeb
@@ -32,16 +33,25 @@ End suite
 Login
     [Documentation]             Login to Salesforce instance. Takes instance_url, username and password as
     ...                         arguments. Uses values given in Copado Robotic Testing's variables section by default.
-    [Arguments]                 ${sf_instance_url}=${login_url}                         ${sf_username}=${username}                            ${sf_password}=${password}
-    GoTo                        ${sf_instance_url}
-    TypeText                    Username                    ${sf_username}              delay=1
-    TypeSecret                  Password                    ${sf_password}
-    ClickText                   Log In
-    # We'll check if variable ${secret} is given. If yes, fill the MFA dialog.
-    # If not, MFA is not expected.
-    # ${secret} is ${None} unless specifically given.
-    ${MFA_needed}=              Run Keyword And Return Status                           Should Not Be Equal         ${None}                   ${secret}
-    Run Keyword If              ${MFA_needed}               Fill MFA                    ${sf_username}              ${secret}                 ${sf_instance_url}
+    [Arguments]                 ${sf_instance_url}=${loginUrl}                          ${sf_username}=${username}                  ${sf_password}=${password}
+
+    ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
+    IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
+        Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
+    ELSE
+        GoTo                    ${sf_instance_url}
+        TypeText                Username                    ${sf_username}              delay=1
+        TypeSecret              Password                    ${sf_password}
+        ClickText               Log In
+        # We'll check if variable ${secret} is given. If yes, fill the MFA dialog.
+        # If not, MFA is not expected.
+        # ${secret} is ${None} unless specifically given.
+        ${MFA_needed}=          Run Keyword And Return Status                           Should Not Be Equal         ${None}         ${secret}
+        Run Keyword If          ${MFA_needed}               Fill MFA                    ${sf_username}              ${secret}       ${sf_instance_url}
+    END
+
+
+
 
 
 Login As
@@ -70,7 +80,7 @@ Fill MFA
 Home
     [Documentation]             Example appstarte: Navigate to homepage, login if needed
     GoTo                        ${home_url}
-    ${login_status} =           IsText                      To access this page, you have to log in to Salesforce.                            2
+    ${login_status} =           IsText                      To access this page, you have to log in to Salesforce.                  2
     Run Keyword If              ${login_status}             Login
     ClickText                   Home
     VerifyTitle                 Home | Salesforce
@@ -120,80 +130,3 @@ DeleteLeads
     VerifyNoText                Undo
     ClickText                   Leads                       partial_match=False
 
-CRT Local Login
-    [Arguments]                  ${mfa_secret}=${EMPTY}
-    Log                         Logging in locally using robot variables
-    goto                        ${loginUrl}
-    TypeText                    Username                    ${username}
-    TypeSecret                  Password                    ${password}
-    ClickText                   Log In
-    IF                          "${mfa_secret}"!="${EMPTY}"
-        ${mfa_code}=            GetOTP                      ${username}                 ${mfa_secret}
-        TypeSecret              VerificationCode            ${mfa_code}
-        ClickText               Verify
-    END
-
-CI/CD Sysadmin Login            
-    [Arguments]                 ${loginUrl}               
-    Log                         Logging in as CI/CD sysadmi
-    # Setup Browser               ${loginUrl}                 ${browser}
-
-User Login
-    [Arguments]                 ${username}                 ${password}       ${mfa_secret}=${EMPTY}
-    Log                         Loggingin as user…
-    ${base_url}=                Get Base URL                ${loginUrl}
-    GoTo                ${base_url}                
-    TypeText                    Username                    ${username}
-    TypeSecret                  Password                    ${password}
-    ClickText                   Log In
-    IF                          "${mfa_secret}" != "${EMPTY}"
-        ${mfa_code}=            GetOTP                      ${username}                 ${mfa_secret}
-        TypeSecret              Verification Code           ${mfa_code}
-        ClickText               Verify
-    END
-
-
-Get Base URL                   
-    [Arguments]                 ${loginUrl}
-    # Intercept the login url including token before login, navigate to the login screen instead
-    ${parts}=                   Split String                ${loginUrl}                 /
-    ${base_url}=                Set Variable                ${parts[0]}//${parts[2]}
-
-Setup Browser
-    [Arguments]                 ${url}=about:blank          ${browser}=chrome
-    OpenBrowser                 ${url}                      ${browser}
-    SetConfig                   LineBreak                   ${EMPTY}     #\ue000
-    SetConfig                   DefaultTimeout              30s          #sometimesSalesforceisslow
-    Evaluate                    random.seed()               random       #initializerandomgenerator
-    SetConfig                   Delay                       0.3          #addsadelayof0.3betweenkeywords
-
-Determine Login Strategy
-    [Arguments]                 ${loginUrl}=${None}         ${username}=${None}     ${password}=${None}
-    ${loginStrategy}=           Evaluate                    'CI/CD sysadmin' if '${loginUrl}' and 'frontdoor' in '${loginUrl}' and '${username}' == 'None' and '${password}' == 'None' else ('User Login' if '${loginUrl}' and '${username}' != 'None' and '${password}' != 'None' else 'CRT local')
-    Log                         Selected login strategy: ${loginStrategy}               console=true
-    Log                         Selectedloginstrategy: ${loginStrategy}            console=true
-    RunKeywordIf                '${loginStrategy}'=='CI/CD sysadmin'                    CI/CD Sysadmin Login        ${loginUrl}             
-    RunKeywordIf                '${loginStrategy}'=='UserLogin'                        User Login                  ${loginUrl}               ${username}    ${password}
-    RunKeywordIf                '${loginStrategy}'=='CRTlocal'                         CRT Local Login             #${username}               ${password}             ${browser}
-
-
-Login As Profile User
-    [Arguments]                 ${profile}
-    ClickText                   Setup                       delay=2s
-    ClickText                   Setup for current app
-    SwitchWindow                NEW
-    GoTo                        ${url}/lightning/setup/EnhancedProfiles/home
-    VerifyText                  Profile Name
-    ${first_char}=              Get Substring                ${profile}                  0                           0
-    ${char_ucase}=              Convert To Upper Case          ${first_char}
-    ClickText                   ${char_ucase}               anchor=Other
-    ClickText                   ${profile}                  partial_match=false         #e.g.SystemAdministrator
-    ClickText                   Assigned Users
-    UseTable                    Profile
-    ClickCell                   r?Login/c3                  #Clicksloginonanyrow
-    ClickText                   Login                       Anchor=Reset Password
-    SwitchWindow                NEW
-    VerifyText                  Logged in as                  timeout=45s
-
-Logout As User
-    ClickText                   Log out                      anchor=Sandbox:
