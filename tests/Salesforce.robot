@@ -9,7 +9,7 @@ Entering A Lead
     [tags]                    Lead
     log                       ${loginUrl}
 
-    Home
+    Login
     LaunchApp                 Sales
     sleep                     3
     LogScreenshot
