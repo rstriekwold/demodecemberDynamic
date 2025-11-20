@@ -9,7 +9,7 @@ Library                         DateTime
 *** Variables ***
 # IMPORTANT: Please read the readme.txt to understand needed variables and how to handle them!!
 ${BROWSER}                      chrome       
-${home_url}                     ${login_url}/lightning/page/home
+${home_url}                     ${login_url}lightning/page/home
 
 
 *** Keywords ***
