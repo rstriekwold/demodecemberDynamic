@@ -121,9 +121,9 @@ DeleteLeads
     ClickText                   Leads                       partial_match=False
 
 CRT Local Login
-    [Arguments]                 ${browser}=chrome           ${mfa_secret}=${EMPTY}
+    [Arguments]                  ${mfa_secret}=${EMPTY}
     Log                         Logging in locally using robot variables
-    SetupBrowser                ${url}                      ${browser}
+    # SetupBrowser                ${url}                      ${browser}
     TypeText                    Username                    ${username}
     TypeSecret                  Password                    ${password}
     ClickText                   Log In
@@ -134,15 +134,15 @@ CRT Local Login
     END
 
 CI/CD Sysadmin Login            
-    [Arguments]                 ${loginUrl}                 ${browser}=chrome
+    [Arguments]                 ${loginUrl}               
     Log                         Logging in as CI/CD sysadmi
-    Setup Browser               ${loginUrl}                 ${browser}
+    # Setup Browser               ${loginUrl}                 ${browser}
 
 User Login
-    [Arguments]                 ${username}                 ${password}                 ${browser}                  ${mfa_secret}=${EMPTY}
+    [Arguments]                 ${username}                 ${password}       ${mfa_secret}=${EMPTY}
     Log                         Loggingin as user…
     ${base_url}=                Get Base URL                ${loginUrl}
-    Open Browser                ${base_url}                 ${browser}
+    GoTo                ${base_url}                
     TypeText                    Username                    ${username}
     TypeSecret                  Password                    ${password}
     ClickText                   Log In
@@ -168,13 +168,13 @@ Setup Browser
     SetConfig                   Delay                       0.3          #addsadelayof0.3betweenkeywords
 
 Determine Login Strategy
-    [Arguments]                 ${loginUrl}=${None}         ${provided_username}=${None}                            ${provided_password}=${None}                      ${browser}=chrome
+    [Arguments]                 ${loginUrl}=${None}         ${username}=${None}                            ${password}=${None}
     ${loginStrategy}=           Evaluate                    'CI/CD sysadmin' if '${loginUrl}' and 'frontdoor' in '${loginUrl}' and
-    ...                         '${provided_username}' == 'None' and '${provided_password}' == 'None' else ('UserLogin' if '${loginUrl}'
-    ...                         and '${provided_username}' != 'None' and '${provided_password}' != 'None' else 'CRTlocal')
+    ...                         '${username}' == 'None' and '${password}' == 'None' else ('UserLogin' if '${loginUrl}'
+    ...                         and '${username}' != 'None' and '${password}' != 'None' else 'CRTlocal')
     Log                         Selectedloginstrategy: ${loginStrategy}            console=true
-    RunKeywordIf                '${loginStrategy}'=='CI/CD sysadmin'                    CI/CD Sysadmin Login        ${loginUrl}               ${browser}
-    RunKeywordIf                '${loginStrategy}'=='UserLogin'                        User Login                  ${loginUrl}               ${provided_username}    ${provided_password}    ${browser}
+    RunKeywordIf                '${loginStrategy}'=='CI/CD sysadmin'                    CI/CD Sysadmin Login        ${loginUrl}             
+    RunKeywordIf                '${loginStrategy}'=='UserLogin'                        User Login                  ${loginUrl}               ${username}    ${password}
     RunKeywordIf                '${loginStrategy}'=='CRTlocal'                         CRT Local Login             #${username}               ${password}             ${browser}
 
 
