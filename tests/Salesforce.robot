@@ -10,7 +10,7 @@ Entering A Lead
     log                       ${loginUrl}
     log                       ${password}
     log                       ${username}
-    Appstate                  Home
+    Home
     LaunchApp                 Sales
     sleep                     3
     LogScreenshot
