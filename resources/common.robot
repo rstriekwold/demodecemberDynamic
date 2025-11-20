@@ -68,6 +68,7 @@ Get Base URL
     # Intercept the login url including token before login, navigate to the login screen instead
     ${parts}=                   Split String                ${loginUrl}                 /
     ${base_url}=                Set Variable                ${parts[0]}//${parts[2]}
+    RETURN                                              ${base_url}
 
 
 Login As
