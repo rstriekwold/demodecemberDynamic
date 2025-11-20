@@ -168,10 +168,9 @@ Setup Browser
     SetConfig                   Delay                       0.3          #addsadelayof0.3betweenkeywords
 
 Determine Login Strategy
-    [Arguments]                 ${loginUrl}=${None}         ${username}=${None}                            ${password}=${None}
-    ${loginStrategy}=           Evaluate                    'CI/CD sysadmin' if '${loginUrl}' and 'frontdoor' in '${loginUrl}' and
-    ...                         '${username}' == 'None' and '${password}' == 'None' else ('UserLogin' if '${loginUrl}'
-    ...                         and '${username}' != 'None' and '${password}' != 'None' else 'CRTlocal')
+    [Arguments]                 ${loginUrl}=${None}         ${username}=${None}     ${password}=${None}
+    ${loginStrategy}=           Evaluate                    'CI/CD sysadmin' if '${loginUrl}' and 'frontdoor' in '${loginUrl}' and '${username}' == 'None' and '${password}' == 'None' else ('User Login' if '${loginUrl}' and '${username}' != 'None' and '${password}' != 'None' else 'CRT local')
+    Log                         Selected login strategy: ${loginStrategy}               console=true
     Log                         Selectedloginstrategy: ${loginStrategy}            console=true
     RunKeywordIf                '${loginStrategy}'=='CI/CD sysadmin'                    CI/CD Sysadmin Login        ${loginUrl}             
     RunKeywordIf                '${loginStrategy}'=='UserLogin'                        User Login                  ${loginUrl}               ${username}    ${password}
