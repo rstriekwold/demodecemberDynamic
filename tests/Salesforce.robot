@@ -7,6 +7,9 @@ Suite Teardown                End suite
 *** Test Cases ***
 Entering A Lead
     [tags]                    Lead
+    log                       ${loginUrl}
+    log                       ${password}
+    log                       ${username}
     Appstate                  Home
     LaunchApp                 Sales
     sleep                     3
