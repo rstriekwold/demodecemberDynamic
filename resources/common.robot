@@ -36,7 +36,8 @@ Login
     ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
     log to console              ${DYNAMIC_LOGIN}
     IF                          '${DYNAMIC_LOGIN}' == 'NoValuePassed'
-        Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
+        # Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
+        GoTo           ${DYNAMIC_LOGIN}          
         log                     ${DYNAMIC_LOGIN}
         log                     in the IF 
     ELSE
