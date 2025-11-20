@@ -40,7 +40,7 @@ Login
         log                     ${DYNAMIC_LOGIN}
         log                     in the IF 
     ELSE
-        log                     in  the  ELSE
+        log                     intheELSE
         GoTo                    ${sf_instance_url}
         TypeText                Username                    ${sf_username}              delay=1
         TypeSecret              Password                    ${sf_password}
