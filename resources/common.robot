@@ -29,29 +29,18 @@ End suite
 
 
 Login
-    [Documentation]             Login to Salesforce instance. Takes instance_url, username and password as
-    ...                         arguments. Uses values given in Copado Robotic Testing's variables section by default.
-    [Arguments]                 ${sf_instance_url}=${loginUrl}                          ${sf_username}=${username}                  ${sf_password}=${password}
-
-    ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
-    log to console              ${DYNAMIC_LOGIN}
-    IF                          '${DYNAMIC_LOGIN}' == 'NoValuePassed'
-        # Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
-        GoTo           ${DYNAMIC_LOGIN}          
-        log                     ${DYNAMIC_LOGIN}
-        log                     in the IF 
-    ELSE
-        log                     intheELSE
-        GoTo                    ${sf_instance_url}
-        TypeText                Username                    ${sf_username}              delay=1
-        TypeSecret              Password                    ${sf_password}
-        ClickText               Log In
-        # We'll check if variable ${secret} is given. If yes, fill the MFA dialog.
-        # If not, MFA is not expected.
-        # ${secret} is ${None} unless specifically given.
-        ${MFA_needed}=          Run Keyword And Return Status                           Should Not Be Equal         ${None}         ${secret}
-        Run Keyword If          ${MFA_needed}               Fill MFA                    ${sf_username}              ${secret}       ${sf_instance_url}
-    END
+   [Documentation]             Login to Salesforce with Dynamic Credentials or username and password if not available
+  ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
+   IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
+       GoTo                    ${loginUrl}
+   ELSE
+       ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
+       IF                      ${login_status}             ==                          False
+       OpenBrowser             ${local_login_url}          ${BROWSER}
+       TypeText                Username                    ${local_username}           delay=1
+       TypeSecret              Password                    ${local_password}
+       ClickText               Log In
+   END
 
 
 
