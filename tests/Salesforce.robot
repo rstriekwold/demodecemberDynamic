@@ -7,7 +7,8 @@ Suite Teardown                End suite
 *** Test Cases ***
 Entering A Lead
     [tags]                    Lead
-    Appstate                  Home
+    Determine Login Strategy
+    # Appstate                  Home
     LaunchApp                 Sales
     sleep                     3
     LogScreenshot
