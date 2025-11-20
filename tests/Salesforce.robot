@@ -8,8 +8,7 @@ Suite Teardown                End suite
 Entering A Lead
     [tags]                    Lead
     log                       ${loginUrl}
-    log                       ${password}
-    log                       ${username}
+
     Home
     LaunchApp                 Sales
     sleep                     3
