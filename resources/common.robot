@@ -34,7 +34,8 @@ Login
     [Arguments]                 ${sf_instance_url}=${loginUrl}                          ${sf_username}=${username}                  ${sf_password}=${password}
 
     ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
-    IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
+    log to console              ${DYNAMIC_LOGIN}
+    IF                          '${DYNAMIC_LOGIN}' == 'NoValuePassed'
         Open Browser            ${DYNAMIC_LOGIN}            ${BROWSER}
     ELSE
         GoTo                    ${sf_instance_url}
