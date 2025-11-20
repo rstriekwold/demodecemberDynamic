@@ -32,7 +32,8 @@ Login
    [Documentation]             Login to Salesforce with Dynamic Credentials or username and password if not available
   ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
    IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
-       GoTo                    ${loginUrl}
+    #    GoTo                    ${loginUrl}
+    log                        ${DYNAMIC_LOGIN}
    ELSE
        ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
        IF                      ${login_status}             ==                          False
