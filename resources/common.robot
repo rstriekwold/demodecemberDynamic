@@ -8,7 +8,7 @@ Library                         DateTime
 
 *** Variables ***
 # IMPORTANT: Please read the readme.txt to understand needed variables and how to handle them!!
-${BROWSER}                      chrome       
+${BROWSER}                      chrome
 ${home_url}                     ${login_url}lightning/page/home
 
 
@@ -29,22 +29,41 @@ End suite
 
 
 Login
-   [Documentation]             Login to Salesforce with Dynamic Credentials or username and password if not available
-  ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
-   IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
-    GoTo                    ${loginUrl}
-    log                        ${DYNAMIC_LOGIN}
-   ELSE
-       ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
-       IF                      ${login_status}             ==                          False
-       OpenBrowser             ${local_login_url}          ${BROWSER}
-       TypeText                Username                    ${local_username}           delay=1
-       TypeSecret              Password                    ${local_password}
-       ClickText               Log In
-   END
+    [Documentation]             Login to Salesforce with Dynamic Credentials or username and password if not available
+    ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
+    IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
+        GoTo                    ${loginUrl}
+        log                     ${DYNAMIC_LOGIN}
+    ELSE
+        ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
+        IF                      ${login_status}             ==                          False
+        OpenBrowser             ${local_login_url}          ${BROWSER}
+        TypeText                Username                    ${local_username}           delay=1
+        TypeSecret              Password                    ${local_password}
+        ClickText               Log In
+    END
 
 
+User Login
+    [Arguments]                 ${username}                 ${password}                                 ${mfa_secret}=${EMPTY}
+    Log                         Loggingin as user…
+    ${base_url}=                Get Base URL                ${loginUrl}
+    GoTo               ${base_url}                 
+    TypeText                    Username                    ${username}
+    TypeSecret                  Password                    ${password}
+    ClickText                   Log In
+    IF                          "${mfa_secret}" != "${EMPTY}"
+        ${mfa_code}=            GetOTP                      ${username}                 ${mfa_secret}
+        TypeSecret              Verification Code           ${mfa_code}
+        ClickText               Verify
+    END
 
+
+Get Base URL                   
+    [Arguments]                 ${loginUrl}
+    # Intercept the login url including token before login, navigate to the login screen instead
+    ${parts}=                   Split String                ${loginUrl}                 /
+    ${base_url}=                Set Variable                ${parts[0]}//${parts[2]}
 
 
 Login As
