@@ -45,7 +45,7 @@ Login
         TypeText                Username                    ${local_username}           delay=1
         TypeSecret              Password                    ${local_password}
         ClickText               Log In
-     END
+        END
     END
 
 
