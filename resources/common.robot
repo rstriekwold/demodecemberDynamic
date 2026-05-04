@@ -41,7 +41,7 @@ Login
     ELSE
         ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
         IF                      ${login_status}             ==                          False
-        OpenBrowser             ${local_login_url}          ${BROWSER}
+        OpenBrowser             ${login_url}          ${BROWSER}
         TypeText                Username                    ${local_username}           delay=1
         TypeSecret              Password                    ${local_password}
         ClickText               Log In
