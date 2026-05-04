@@ -30,7 +30,7 @@ End suite
 
 Login
     [Documentation]             Login to Salesforce with Dynamic Credentials or username and password if not available
-    ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
+         ${DYNAMIC_LOGIN}=           Get Variable Value          ${loginUrl}                 NoValuePassed
     IF                          '${DYNAMIC_LOGIN}' != 'NoValuePassed'
         IF                      '${ownuser}' == 'TRUE'
             User Login                                  ${username}                     	    ${password}  
@@ -40,11 +40,12 @@ Login
         END
     ELSE
         ${login_status} =       IsText                      To access this page, you have to log in to Salesforce.                  2
-        IF                      ${login_status}             ==                          False
-        OpenBrowser             ${login_url}          ${BROWSER}
+        IF                      ${login_status} == False
+        OpenBrowser             ${local_login_url}          ${BROWSER}
         TypeText                Username                    ${local_username}           delay=1
         TypeSecret              Password                    ${local_password}
         ClickText               Log In
+     END
     END
 
 
